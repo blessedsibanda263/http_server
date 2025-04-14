@@ -24,7 +24,7 @@ func uaMiddleware(next http.HandlerFunc) http.HandlerFunc {
 
 func uaStatusHandler(w http.ResponseWriter, r *http.Request) {
 	ua := r.Context().Value("agent").(string)
-	fmt.Fprintf(w, fmt.Sprintf("congratulations, you are using: %s", ua))
+	fmt.Fprintf(w, "%s", fmt.Sprintf("congratulations, you are using: %s", ua))
 }
 
 func SharingState() {
