@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -13,6 +14,19 @@ type comment struct {
 }
 
 var comments []comment
+
+func getComment(w http.ResponseWriter, r *http.Request) {
+	commentID, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if commentID == 0 || len(comments) < commentID {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	fmt.Fprintf(w, "Comment %d: %s", commentID, comments[commentID-1].text)
+}
 
 func getComments(w http.ResponseWriter, r *http.Request) {
 	commentBody := ""
@@ -37,6 +51,7 @@ func postComments(w http.ResponseWriter, r *http.Request) {
 
 func CommentsServer() {
 	http.HandleFunc("GET /comments", getComments)
+	http.HandleFunc("GET /comments/{id}", getComment)
 	http.HandleFunc("POST /comments", postComments)
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		panic(err)

@@ -1,8 +1,9 @@
-package examples
+package sharingstate
 
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 )
@@ -12,6 +13,7 @@ var validAgent = regexp.MustCompile(`(?i)(chrome|firefox)`)
 func uaMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userAgent := r.UserAgent()
+		log.Println("User Agent: ", userAgent)
 		if !validAgent.MatchString(userAgent) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
