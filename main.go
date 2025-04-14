@@ -1,13 +1,38 @@
 package main
 
-import "net/http"
+import (
+	"fmt"
+	"io"
+	"net/http"
+	"time"
+)
+
+type comment struct {
+	text       string
+	dateString string
+}
+
+var comments []comment
 
 func getComments(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("here you'll get the comments"))
+	commentBody := ""
+	for i := range comments {
+		commentBody += fmt.Sprintf("%s (%s)\n", comments[i].text, comments[i].dateString)
+	}
+	fmt.Fprintf(w, "%s", fmt.Sprintf("Comments: \n%s", commentBody))
 }
 
 func postComments(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("thank you for posting a comment"))
+	commentText, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	comments = append(comments, comment{
+		text:       string(commentText),
+		dateString: time.Now().Format(time.RFC3339),
+	})
+	w.WriteHeader(http.StatusOK)
 }
 
 func main() {
