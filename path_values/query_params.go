@@ -2,7 +2,6 @@ package path_values
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"regexp"
 	"time"
@@ -32,7 +31,6 @@ var comments = []comment{
 func commentsHandler(w http.ResponseWriter, r *http.Request) {
 	var result []comment
 	params := r.URL.Query()
-	log.Println("Params -->", params)
 	if username := params.Get("username"); username != "" {
 		filteredComments := []comment{}
 		for k := range comments {
@@ -47,7 +45,6 @@ func commentsHandler(w http.ResponseWriter, r *http.Request) {
 		re := regexp.MustCompile(search)
 		for k := range comments {
 			if re.MatchString(comments[k].text) {
-				log.Println("Appending ->", comments[k])
 				filteredComments = append(filteredComments, comments[k])
 			}
 		}
